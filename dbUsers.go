@@ -1,9 +1,28 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
 
+	"github.com/matthewhartstonge/argon2"
+)
+
+func findUser(email string) (*user, error) {
+	var user user
+	row := db.QueryRow("select * from users where email = ?", email)
+	if err := row.Scan(&user.Id, &user.Name, &user.Email, &user.Password, &user.Image); err != nil {
+		return nil, fmt.Errorf("findUser Error %v", err)
+	}
+	return &user, nil
+}
 func createUser(user user) (*user, error) {
-	hashedPassword := "luego lo hacemos"
+
+	argon := argon2.DefaultConfig()
+
+	hashedPassword, error := argon.HashEncoded([]byte(user.Password))
+
+	if error != nil {
+		return nil, fmt.Errorf("createuser Error %v", error)
+	}
 	_, err := db.Exec(
 		"INSERT INTO users(name,email,password,image) values(?,?,?,?)",
 		user.Name,
