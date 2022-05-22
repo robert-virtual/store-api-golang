@@ -28,6 +28,10 @@ func findProducts() ([]product, error) { // retorna una lista de usuarios y un e
 		if err := rows.Scan(&product.Id, &product.Name, &product.Description, &product.Price, &product.Quantity, &product.UserId); err != nil {
 			return nil, fmt.Errorf("findProducts Error %v", err)
 		}
+		if product.UserId != nil {
+			product.User, err = findUserById(*product.UserId)
+			fmt.Println(err)
+		}
 		products = append(products, product)
 	}
 	if err := rows.Err(); err != nil {

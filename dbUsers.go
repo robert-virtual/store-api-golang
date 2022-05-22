@@ -6,11 +6,19 @@ import (
 	"github.com/matthewhartstonge/argon2"
 )
 
+func findUserById(id string) (*user, error) {
+	var user user
+	row := db.QueryRow("select * from users where id = ?", id)
+	if err := row.Scan(&user.Id, &user.Name, &user.Email, &user.Password, &user.Image); err != nil {
+		return nil, fmt.Errorf("findUserById Error %v", err)
+	}
+	return &user, nil
+}
 func findUser(email string) (*user, error) {
 	var user user
 	row := db.QueryRow("select * from users where email = ?", email)
 	if err := row.Scan(&user.Id, &user.Name, &user.Email, &user.Password, &user.Image); err != nil {
-		return nil, fmt.Errorf("findUser Error %v", err)
+		return nil, fmt.Errorf("findUserByEmail Error %v", err)
 	}
 	return &user, nil
 }
