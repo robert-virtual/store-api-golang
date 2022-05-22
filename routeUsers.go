@@ -28,20 +28,20 @@ func login(ctx *gin.Context) {
 	err := ctx.BindJSON(&userRecived) // solo necesitamos email y passsword
 	if err != nil {
 		ctx.JSON(400, gin.H{
-			"msg": err,
+			"msg": err.Error(),
 		})
 		return // para que no continue con el codigo
 	}
 	user, error := findUser(userRecived.Email)
 	if error != nil {
-		ctx.JSON(401, error)
-		fmt.Println(error)
+		ctx.JSON(401, error.Error())
+		fmt.Println(error.Error())
 		return
 	}
 	// desencriptar la password y cmpararla con la password enviada por el usuario
 	ok, err := argon2.VerifyEncoded([]byte(userRecived.Password), []byte(user.Password))
-	if !ok {
-		ctx.JSON(401, error)
+	if !ok || err != nil {
+		ctx.JSON(401, err.Error())
 		return
 	}
 	// enviar cookies o un json web token ya que los datos son correctos
@@ -52,7 +52,7 @@ func login(ctx *gin.Context) {
 	tokenString, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
 
 	if err != nil {
-		ctx.JSON(500, err)
+		ctx.JSON(500, err.Error())
 		return
 	}
 	ctx.JSON(201, gin.H{
@@ -67,13 +67,13 @@ func register(ctx *gin.Context) {
 	var user user
 	err := ctx.BindJSON(&user)
 	if err != nil {
-		ctx.JSON(400, err)
+		ctx.JSON(400, err.Error())
 		return // para que no continue con el codigo
 	}
 	_, error := createUser(user)
 	if error != nil {
 
-		ctx.JSON(400, error)
+		ctx.JSON(400, error.Error())
 		return
 	}
 	ctx.JSON(201, user)
