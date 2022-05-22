@@ -1,6 +1,11 @@
 package main
 
 import (
+	"fmt"
+	"os"
+	"time"
+
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/matthewhartstonge/argon2"
 )
@@ -30,6 +35,7 @@ func login(ctx *gin.Context) {
 	user, error := findUser(userRecived.Email)
 	if error != nil {
 		ctx.JSON(401, error)
+		fmt.Println(error)
 		return
 	}
 	// desencriptar la password y cmpararla con la password enviada por el usuario
@@ -39,7 +45,20 @@ func login(ctx *gin.Context) {
 		return
 	}
 	// enviar cookies o un json web token ya que los datos son correctos
-	ctx.JSON(201, user)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"uid": user.Id,
+		"nbf": time.Now().Unix(),
+	})
+	tokenString, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
+
+	if err != nil {
+		ctx.JSON(500, err)
+		return
+	}
+	ctx.JSON(201, gin.H{
+		"user":  user,
+		"token": tokenString,
+	})
 
 }
 
