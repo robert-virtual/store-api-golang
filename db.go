@@ -11,7 +11,7 @@ import (
 
 var db *sql.DB
 
-func openDB() {
+func ConnectToDB() {
 	config := mysql.Config{
 		User:   os.Getenv("DBUSER"), // obtener variable de entorno
 		Passwd: os.Getenv("DBPASS"),
