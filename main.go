@@ -10,6 +10,7 @@ func main() {
 	router := gin.Default()
 	router.Use(cors.New(cors.Config{
 		AllowAllOrigins: true,
+		AllowHeaders:    []string{"*"},
 	}))
 	products := router.Group("/products")
 	{
