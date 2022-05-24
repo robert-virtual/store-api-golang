@@ -33,6 +33,10 @@ func findProducts() ([]product, error) { // retorna una lista de usuarios y un e
 			product.User, err = findUserById(*product.UserId)
 			fmt.Println(err)
 		}
+		images, err := findImages(*product.Id)
+		if err == nil {
+			product.Images = images
+		}
 		products = append(products, product)
 	}
 	if err := rows.Err(); err != nil {
