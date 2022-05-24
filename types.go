@@ -18,7 +18,8 @@ type product struct {
 	Quantity    int64   `json:"quantity"`
 	UserId      *string `json:"userId"` // es nullable
 	User        *user   `json:"user"`
-	Images      []image `json:"images"` // los slices por defecto aceptan null
+	Images      []image `json:"images"`    // los slices por defecto aceptan null
+	CreatedAt   *string `json:"createdAt"` // es nullable
 }
 type image struct {
 	Id        *string `json:"id"` // al convertirse a json la propiedad Id sera renombrada a id
